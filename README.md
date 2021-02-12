@@ -3,8 +3,8 @@
 
 ### Как запустить проект
 
-1. Добавляем исходный код фреймворка GbFramework в PYTHONPATH
-   https://clck.ru/TFwup
+1. Добавляем исходный код фреймворка [GbFramework](https://clck.ru/TFwup) в PYTHONPATH
+   
 
 2. Устанавливаем uwsgi
 
