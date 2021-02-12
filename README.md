@@ -1,3 +1,8 @@
+# architecture-design-patterns-web
+[Репозиторий кода](https://clck.ru/TFwwr)
+
+### Как запустить проект
+
 1. Добавляем исходный код фреймворка GbFramework в PYTHONPATH
    https://clck.ru/TFwup
 
@@ -6,19 +11,16 @@
 3. Команда запуска локального web сервера
    uwsgi --http :8000 --wsgi-file main.py
 
-Ссылка на репозиторий:
-https://clck.ru/TFwwr
-
-===
+### Краткое описание проекта
 
 В проекте реализованы паттерны:
-PageController
-FrontController
+- PageController
+- FrontController
 
 Доступные URL:
-http://localhost:8000/
-http://localhost:8000/secret/
+- http://localhost:8000/
+- http://localhost:8000/secret/
 
 Файлы шаблоны с использованием bootstrap расположены в директории templates/:
-index.html
-secret.html
+- index.html
+- secret.html
