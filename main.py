@@ -1,5 +1,5 @@
 from GbFramework import WebApp
-from views import index_view, secret_view
+from views import index_view, secret_view, contact_view
 
 
 def fc_add_secret_key(request):
@@ -12,6 +12,7 @@ front_controllers = [
 routes = {
     '/': index_view,
     '/secret/': secret_view,
+    '/contact/': contact_view,
 }
 
 application = WebApp(routes, front_controllers)
