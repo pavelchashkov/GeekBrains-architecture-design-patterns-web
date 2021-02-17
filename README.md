@@ -17,11 +17,15 @@ uwsgi --http :8000 --wsgi-file main.py
 В проекте реализованы паттерны:
 - PageController
 - FrontController
+- Обработка параметров url get запроса
+- Обработка параметров формы post запроса
 
 Доступные URL:
 - http://localhost:8000/
 - http://localhost:8000/secret/
+- http://localhost:8000/contact/
 
 Файлы шаблоны с использованием bootstrap расположены в директории templates/:
 - index.html
 - secret.html
+- contact.html
