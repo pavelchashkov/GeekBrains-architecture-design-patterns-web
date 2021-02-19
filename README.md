@@ -19,6 +19,7 @@ uwsgi --http :8000 --wsgi-file main.py
 - FrontController
 - Обработка параметров url get запроса
 - Обработка параметров формы post запроса
+- Шаблоны отображения
 
 Доступные URL:
 - http://localhost:8000/
@@ -26,6 +27,8 @@ uwsgi --http :8000 --wsgi-file main.py
 - http://localhost:8000/contact/
 
 Файлы шаблоны с использованием bootstrap расположены в директории templates/:
+- base.html (базовый файл шаблона)
 - index.html
 - secret.html
 - contact.html
+- inc-table.html (встраиваемый компонент таблицы)
