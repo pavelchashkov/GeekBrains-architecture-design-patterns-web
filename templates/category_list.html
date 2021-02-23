@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+Категории
+{% endblock %}
+
+{% block body %}
+<h3>Список категорий</h3>
+
+<ul>
+    {% for item in categories %}
+    <li>
+        {{item.name}} <span>Количество турниров: {{item.tournament_count()}}</span>
+    </li>
+    {% endfor %}
+</ul>
+
+{% include "inc-table.html" %}
+
+{% endblock %}
