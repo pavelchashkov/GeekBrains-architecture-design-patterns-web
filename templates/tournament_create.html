@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+Создание турнира
+{% endblock %}
+
+{% block body %}
+<h3>Создание турнира</h3>
+
+<form method="post">
+    <div class="form-group">
+        <label for="inputName">Название</label>
+        <input type="text" name="name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="inputEmail">Категория</label>
+        <select class="form-control" name="category_id">
+            {% for item in categories %}
+            <option value="{{item.id}}">{{item.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Создать</button>
+</form>
+{% endblock %}

@@ -5,26 +5,25 @@ contact
 {% endblock %}
 
 {% block body %}
-<div class="container">
-  <h1>Contact form</h1>
-  <form method="post">
-    <div class="form-group">
-      <label for="inputName">Name</label>
-      <input type="text" name="name" class="form-control" />
-    </div>
-    <div class="form-group">
-      <label for="inputEmail">Email</label>
-      <input type="email" name="email" class="form-control" />
-    </div>
-    <div class="form-group">
-      <label for="inputSubject">Тема</label>
-      <input type="text" name="subject" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="inputMessage">Message</label>
-        <textarea type="text" name="message" class="form-control"></textarea>
-      </div>
-    <button type="submit" class="btn btn-primary">Send</button>
-  </form>
-</div>
+<h3>Форма обратной связи</h3>
+
+<form method="post">
+  <div class="form-group">
+    <label for="inputName">Имя</label>
+    <input type="text" name="name" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label for="inputEmail">Email</label>
+    <input type="email" name="email" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label for="inputSubject">Тема</label>
+    <input type="text" name="subject" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label for="inputMessage">Сообщение</label>
+    <textarea type="text" name="message" class="form-control"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Отправить</button>
+</form>
 {% endblock %}
