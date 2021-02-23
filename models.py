@@ -1,3 +1,5 @@
+from resource.prototypes import PrototypeMixin
+
 class User:
     pass
 
@@ -39,7 +41,7 @@ class Category:
         return result
 
 
-class Tournament:
+class Tournament(PrototypeMixin):
     def __init__(self, name, category):
         self.name = name
         self.category = category

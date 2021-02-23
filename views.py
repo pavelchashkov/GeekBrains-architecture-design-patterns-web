@@ -26,6 +26,13 @@ def tournament_create(request):
 
 
 def tournament_copy(request):
+    params = request['params']
+    name = params['name']
+    old_tournament = site.get_tournament_by_name(name)
+    if old_tournament:
+        new_tournament = old_tournament.clone()
+        new_tournament.name = f'{name}_copy'
+        site.tournaments.append(new_tournament)
     return '200 OK', render('tournament_list', tournaments=site.tournaments)
 
 
