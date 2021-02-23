@@ -20,15 +20,25 @@ uwsgi --http :8000 --wsgi-file main.py
 - Обработка параметров url get запроса
 - Обработка параметров формы post запроса
 - Шаблоны отображения
+- Одиночка (singleton)
+- Прототип (prototype)
+- Абстрактная фабрика
+- Фабричный метод
 
 Доступные URL:
 - http://localhost:8000/
-- http://localhost:8000/secret/
+- http://localhost:8000/tournament-create/
+- http://localhost:8000/tournament-copy/
+- http://localhost:8000/category-list/
+- http://localhost:8000/category-create/
 - http://localhost:8000/contact/
+
 
 Файлы шаблоны с использованием bootstrap расположены в директории templates/:
 - base.html (базовый файл шаблона)
-- index.html
-- secret.html
+- tournament_list.html
+- tournament_create.html
+- category_list.html
+- category_create.html
 - contact.html
 - inc-table.html (встраиваемый компонент таблицы)
