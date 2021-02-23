@@ -1,5 +1,8 @@
 from GbFramework import WebApp
 from views import tournament_list, tournament_create, category_list, tournament_copy, category_create, contact_view
+from custom_logging import Logger
+
+logger = Logger('main')
 
 
 def fc_add_secret_key(request):

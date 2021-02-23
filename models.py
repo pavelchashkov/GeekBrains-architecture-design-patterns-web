@@ -1,4 +1,7 @@
 from resource.prototypes import PrototypeMixin
+from custom_logging import Logger
+
+logger = Logger('models')
 
 class User:
     pass
@@ -35,9 +38,11 @@ class Category:
         self.tournaments = []
 
     def tournament_count(self):
+        logger.log('Получаем tournament_count')
         result = len(self.tournaments)
         if self.category:
             result += self.category.tournament_count()
+        logger.log(result)
         return result
 
 

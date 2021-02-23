@@ -1,18 +1,22 @@
 from GbFramework import render
 from datetime import datetime
 from models import CompMapSite
+from custom_logging import Logger
 
 site = CompMapSite()
+logger = Logger('views')
 
 
 def tournament_list(request):
-    print(site.categories)
-    print(site.tournaments)
+    logger.log('tournament_list')
+    logger.log(site.categories)
+    logger.log(site.tournaments)
     return '200 OK', render('tournament_list', tournaments=site.tournaments)
 
 
 def tournament_create(request):
     if request['method'] == 'POST':
+        logger.log('tournament_create POST')
         data = request['data']
         name = data['name']
         category_id = data.get('category_id')
@@ -22,10 +26,12 @@ def tournament_create(request):
             site.tournaments.append(tournament)
         return '302 Moved Temporarily', render('tournament_list', tournaments=site.tournaments)
     else:
+        logger.log('tournament_create GET')
         return '200 OK', render('tournament_create', categories=site.categories)
 
 
 def tournament_copy(request):
+    logger.log('tournament_copy')
     params = request['params']
     name = params['name']
     old_tournament = site.get_tournament_by_name(name)
@@ -38,6 +44,7 @@ def tournament_copy(request):
 
 def category_create(request):
     if request['method'] == 'POST':
+        logger.log('category_create POST')
         data = request['data']
         name = data['name']
         category_id = data.get('category_id')
@@ -46,17 +53,20 @@ def category_create(request):
         site.categories.append(new_category)
         return '302 Moved Temporarily', render('category_list', categories=site.categories)
     else:
+        logger.log('category_create GET')
         return '200 OK', render('category_create', categories=site.categories)
 
 
 def category_list(request):
-    print(site.categories)
-    print(site.tournaments)
+    logger.log('category_list')
+    logger.log(site.categories)
+    logger.log(site.tournaments)
     return '200 OK', render('category_list', categories=site.categories)
 
 
 def contact_view(request):
     if request['method'] == 'POST':
+        logger.log('contact_view POST')
         data = request['data']
         name = data['name']
         email = data['email']
