@@ -1,3 +1,4 @@
+from wsgiref.simple_server import make_server
 from GbFramework import WebApp
 from views import tournament_list, tournament_create, category_list, tournament_copy, category_create, contact_view
 from custom_logging import Logger
@@ -23,3 +24,8 @@ routes = {
 }
 
 application = WebApp(routes, front_controllers)
+
+if __name__ == '__main__':
+    with make_server('localhost', 8000, application) as httpd:
+        logger.log('Start test web server on port 8000')
+        httpd.serve_forever()

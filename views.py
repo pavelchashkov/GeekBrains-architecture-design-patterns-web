@@ -9,8 +9,8 @@ logger = Logger('views')
 
 def tournament_list(request):
     logger.log('tournament_list')
-    logger.log(site.categories)
-    logger.log(site.tournaments)
+    logger.log(f'categories = {site.categories}')
+    logger.log(f'tournaments = {site.tournaments}')
     return '200 OK', render('tournament_list', tournaments=site.tournaments)
 
 
@@ -59,8 +59,8 @@ def category_create(request):
 
 def category_list(request):
     logger.log('category_list')
-    logger.log(site.categories)
-    logger.log(site.tournaments)
+    logger.log(f'categories = {site.categories}')
+    logger.log(f'tournaments = {site.tournaments}')
     return '200 OK', render('category_list', categories=site.categories)
 
 
