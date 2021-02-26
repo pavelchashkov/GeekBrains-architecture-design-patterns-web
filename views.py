@@ -2,13 +2,14 @@ from GbFramework import render
 from main import application
 from datetime import datetime
 from models import CompMapSite
-from custom_logging import Logger
+from custom_logging import Logger, debug
 
 site = CompMapSite()
 logger = Logger('views')
 
 
 @application.add_route('/')
+@debug
 def tournament_list(request):
     logger.log('tournament_list')
     logger.log(f'categories = {site.categories}')
@@ -17,6 +18,7 @@ def tournament_list(request):
 
 
 @application.add_route('/tournament-create/')
+@debug
 def tournament_create(request):
     if request['method'] == 'POST':
         logger.log('tournament_create POST')
@@ -34,6 +36,7 @@ def tournament_create(request):
 
 
 @application.add_route('/tournament-copy/')
+@debug
 def tournament_copy(request):
     logger.log('tournament_copy')
     params = request['params']
@@ -47,6 +50,7 @@ def tournament_copy(request):
 
 
 @application.add_route('/category-list/')
+@debug
 def category_list(request):
     logger.log('category_list')
     logger.log(f'categories = {site.categories}')
@@ -55,6 +59,7 @@ def category_list(request):
 
 
 @application.add_route('/category-create/')
+@debug
 def category_create(request):
     if request['method'] == 'POST':
         logger.log('category_create POST')
@@ -70,7 +75,9 @@ def category_create(request):
         logger.log('category_create GET')
         return '200 OK', render('category_create', categories=site.categories)
 
+
 @application.add_route('/contact/')
+@debug
 def contact_view(request):
     if request['method'] == 'POST':
         logger.log('contact_view POST')
