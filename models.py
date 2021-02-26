@@ -7,18 +7,18 @@ class User:
     pass
 
 
-class Player(User):
+class Student(User):
     pass
 
 
-class Organizer(User):
+class Teacher(User):
     pass
 
 
 class UserFactory:
     types = {
-        'player': Player,
-        'organizer': Organizer,
+        'student': Student,
+        'teacher': Teacher,
     }
 
     @classmethod
@@ -35,36 +35,36 @@ class Category:
         self.name = name
         self.category = category
         Category.auto_id += 1
-        self.tournaments = []
+        self.courses = []
 
-    def tournament_count(self):
-        logger.log('Получаем tournament_count')
-        result = len(self.tournaments)
+    def course_count(self):
+        logger.log('Calc course_count')
+        result = len(self.courses)
         if self.category:
-            result += self.category.tournament_count()
+            result += self.category.course_count()
         logger.log(result)
         return result
 
 
-class Tournament(PrototypeMixin):
+class Course(PrototypeMixin):
     def __init__(self, name, category):
         self.name = name
         self.category = category
-        self.category.tournaments.append(self)
+        self.category.courses.append(self)
 
 
-class IndividualTournament(Tournament):
+class InteractiveCourse(Course):
     pass
 
 
-class CommandTournament(Tournament):
+class RecordCourse(Course):
     pass
 
 
-class TournamentFactory:
+class CourseFactory:
     types = {
-        'individual': IndividualTournament,
-        'command': CommandTournament,
+        'interactive': InteractiveCourse,
+        'record': RecordCourse,
     }
 
     @classmethod
@@ -72,11 +72,11 @@ class TournamentFactory:
         return cls.types[type_](name, category)
 
 
-class CompMapSite:
+class TrainingSite:
     def __init__(self):
-        self.players = []
-        self.organizers = []
-        self.tournaments = []
+        self.teachers = []
+        self.students = []
+        self.courses = []
         self.categories = []
 
     @staticmethod
@@ -94,11 +94,11 @@ class CompMapSite:
         raise Exception(f'Нет категории с id = {id}')
 
     @staticmethod
-    def create_tournament(type_, name, category) -> None:
-        return TournamentFactory.create(type_, name, category)
+    def create_course(type_, name, category) -> None:
+        return CourseFactory.create(type_, name, category)
 
-    def get_tournament_by_name(self, name) -> Tournament:
-        for item in self.tournaments:
+    def get_course_by_name(self, name) -> Course:
+        for item in self.courses:
             if item.name == name:
                 return item
         return None

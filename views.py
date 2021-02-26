@@ -1,52 +1,52 @@
 from GbFramework import render
 from main import application
 from datetime import datetime
-from models import CompMapSite
+from models import TrainingSite
 from custom_logging import Logger, debug
 
-site = CompMapSite()
+site = TrainingSite()
 logger = Logger('views')
 
 
 @application.add_route('/')
 @debug
-def tournament_list(request):
-    logger.log('tournament_list')
+def course_list(request):
+    logger.log('course_list')
     logger.log(f'categories = {site.categories}')
-    logger.log(f'tournaments = {site.tournaments}')
-    return '200 OK', render('tournament_list', tournaments=site.tournaments)
+    logger.log(f'courses = {site.courses}')
+    return '200 OK', render('course_list', courses=site.courses)
 
 
-@application.add_route('/tournament-create/')
+@application.add_route('/course-create/')
 @debug
-def tournament_create(request):
+def course_create(request):
     if request['method'] == 'POST':
-        logger.log('tournament_create POST')
+        logger.log('course_create POST')
         data = request['data']
         name = data['name']
         category_id = data.get('category_id')
         if category_id:
             category = site.find_category_by_id(int(category_id))
-            tournament = site.create_tournament('individual', name, category)
-            site.tournaments.append(tournament)
-        return '302 Moved Temporarily', render('tournament_list', tournaments=site.tournaments)
+            course = site.create_course('interactive', name, category)
+            site.courses.append(course)
+        return '302 Moved Temporarily', render('course_list', courses=site.courses)
     else:
-        logger.log('tournament_create GET')
-        return '200 OK', render('tournament_create', categories=site.categories)
+        logger.log('course_create GET')
+        return '200 OK', render('course_create', categories=site.categories)
 
 
-@application.add_route('/tournament-copy/')
+@application.add_route('/course-copy/')
 @debug
-def tournament_copy(request):
-    logger.log('tournament_copy')
+def course_copy(request):
+    logger.log('course_copy')
     params = request['params']
     name = params['name']
-    old_tournament = site.get_tournament_by_name(name)
-    if old_tournament:
-        new_tournament = old_tournament.clone()
-        new_tournament.name = f'{name}_copy'
-        site.tournaments.append(new_tournament)
-    return '200 OK', render('tournament_list', tournaments=site.tournaments)
+    old_course = site.get_course_by_name(name)
+    if old_course:
+        new_course = old_course.clone()
+        new_course.name = f'{name}_copy'
+        site.courses.append(new_course)
+    return '200 OK', render('course_list', courses=site.courses)
 
 
 @application.add_route('/category-list/')
@@ -54,7 +54,7 @@ def tournament_copy(request):
 def category_list(request):
     logger.log('category_list')
     logger.log(f'categories = {site.categories}')
-    logger.log(f'tournaments = {site.tournaments}')
+    logger.log(f'courses = {site.courses}')
     return '200 OK', render('category_list', categories=site.categories)
 
 

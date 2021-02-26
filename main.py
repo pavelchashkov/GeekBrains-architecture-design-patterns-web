@@ -14,7 +14,7 @@ front_controllers = [
     fc_add_secret_key
 ]
 
-application = WebApp('MyApp', front_controllers)
+application = WebApp('TrainingSite', front_controllers)
 import_module('views')
 
 if __name__ == '__main__':
