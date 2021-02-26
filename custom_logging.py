@@ -1,4 +1,4 @@
-from resource.singletones import SingletonByName
+from GbFramework import SingletonByName
 from datetime import datetime
 
 
