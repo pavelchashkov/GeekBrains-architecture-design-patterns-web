@@ -8,10 +8,15 @@
 <h3>Список категорий</h3>
 
 <ul>
-    {% for item in categories %}
+    {% for item in categories recursive %}
     <li>
-        {{item.name}} <span>Количество турниров: {{item.tournament_count()}}</span>
+        {{ item.name }} <span>Количество курсов: {{item.course_count()}}</span>
     </li>
+    {% if item.children %}
+    <ul>
+        {{ loop(item.children) }}
+    </ul>
+    {% endif %}
     {% endfor %}
 </ul>
 

@@ -7,18 +7,18 @@ class User:
     pass
 
 
-class Player(User):
+class Student(User):
     pass
 
 
-class Organizer(User):
+class Teacher(User):
     pass
 
 
 class UserFactory:
     types = {
-        'player': Player,
-        'organizer': Organizer,
+        'student': Student,
+        'teacher': Teacher,
     }
 
     @classmethod
@@ -30,41 +30,64 @@ class Category:
 
     auto_id = 0
 
-    def __init__(self, name, category):
+    def __init__(self, name, parent_category):
         self.id = Category.auto_id
         self.name = name
-        self.category = category
+        self.children = []
+        self.courses = []
+        self.have_parent = False
         Category.auto_id += 1
-        self.tournaments = []
+        if parent_category:
+            self.have_parent = True        
+            parent_category.children.append(self)
+        logger.log(self)
 
-    def tournament_count(self):
-        logger.log('Получаем tournament_count')
-        result = len(self.tournaments)
-        if self.category:
-            result += self.category.tournament_count()
+    def course_count(self):
+        logger.log('Calc course_count')
+        result = len(self.courses)
+        if len(self.children) > 0:
+            for item in self.children:
+                result += item.course_count()
         logger.log(result)
         return result
 
+    @property
+    def member(self):
+        return "child" if self.have_parent else "parent"
 
-class Tournament(PrototypeMixin):
+    def __repr__(self):
+        return f'<{self.__class__.__name__}> "{self.name}" ({self.member})'
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class Course(PrototypeMixin):
     def __init__(self, name, category):
         self.name = name
         self.category = category
-        self.category.tournaments.append(self)
+        self.category.courses.append(self)
+
+    def clone(self):
+        copy_object = super().clone()
+        copy_object.name += '_copy'
+        copy_object.category = self.category
+        copy_object.category.courses.append(copy_object)
+        return copy_object
 
 
-class IndividualTournament(Tournament):
+class InteractiveCourse(Course):
     pass
 
 
-class CommandTournament(Tournament):
+class RecordCourse(Course):
     pass
 
 
-class TournamentFactory:
+class CourseFactory:
     types = {
-        'individual': IndividualTournament,
-        'command': CommandTournament,
+        'interactive': InteractiveCourse,
+        'record': RecordCourse,
     }
 
     @classmethod
@@ -72,11 +95,11 @@ class TournamentFactory:
         return cls.types[type_](name, category)
 
 
-class CompMapSite:
+class TrainingSite:
     def __init__(self):
-        self.players = []
-        self.organizers = []
-        self.tournaments = []
+        self.teachers = []
+        self.students = []
+        self.courses = []
         self.categories = []
 
     @staticmethod
@@ -87,6 +110,9 @@ class CompMapSite:
     def create_category(name, category=None):
         return Category(name, category)
 
+    def find_parent_categories(self):
+        return [c for c in self.categories if not c.have_parent]
+
     def find_category_by_id(self, id):
         for item in self.categories:
             if item.id == id:
@@ -94,11 +120,11 @@ class CompMapSite:
         raise Exception(f'Нет категории с id = {id}')
 
     @staticmethod
-    def create_tournament(type_, name, category) -> None:
-        return TournamentFactory.create(type_, name, category)
+    def create_course(type_, name, category) -> None:
+        return CourseFactory.create(type_, name, category)
 
-    def get_tournament_by_name(self, name) -> Tournament:
-        for item in self.tournaments:
+    def get_course_by_name(self, name) -> Course:
+        for item in self.courses:
             if item.name == name:
                 return item
         return None

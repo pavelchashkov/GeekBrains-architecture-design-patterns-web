@@ -24,11 +24,13 @@ uwsgi --http :8000 --wsgi-file main.py
 - Прототип (prototype)
 - Абстрактная фабрика
 - Фабричный метод
+- Декоратор
+- Фасад
 
 Доступные URL:
 - http://localhost:8000/
-- http://localhost:8000/tournament-create/
-- http://localhost:8000/tournament-copy/
+- http://localhost:8000/course-create/
+- http://localhost:8000/course-copy/
 - http://localhost:8000/category-list/
 - http://localhost:8000/category-create/
 - http://localhost:8000/contact/
@@ -36,8 +38,8 @@ uwsgi --http :8000 --wsgi-file main.py
 
 Файлы шаблоны с использованием bootstrap расположены в директории templates/:
 - base.html (базовый файл шаблона)
-- tournament_list.html
-- tournament_create.html
+- course_list.html
+- course_create.html
 - category_list.html
 - category_create.html
 - contact.html
