@@ -24,6 +24,8 @@ uwsgi --http :8000 --wsgi-file main.py
 - Прототип (prototype)
 - Абстрактная фабрика
 - Фабричный метод
+- Декоратор
+- Фасад
 
 Доступные URL:
 - http://localhost:8000/
