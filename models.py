@@ -30,20 +30,36 @@ class Category:
 
     auto_id = 0
 
-    def __init__(self, name, category):
+    def __init__(self, name, parent_category):
         self.id = Category.auto_id
         self.name = name
-        self.category = category
-        Category.auto_id += 1
+        self.children = []
         self.courses = []
+        self.have_parent = False
+        Category.auto_id += 1
+        if parent_category:
+            self.have_parent = True        
+            parent_category.children.append(self)
+        logger.log(self)
 
     def course_count(self):
         logger.log('Calc course_count')
         result = len(self.courses)
-        if self.category:
-            result += self.category.course_count()
+        if len(self.children) > 0:
+            for item in self.children:
+                result += item.course_count()
         logger.log(result)
         return result
+
+    @property
+    def member(self):
+        return "child" if self.have_parent else "parent"
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__}> "{self.name}" ({self.member})'
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class Course(PrototypeMixin):
@@ -51,6 +67,13 @@ class Course(PrototypeMixin):
         self.name = name
         self.category = category
         self.category.courses.append(self)
+
+    def clone(self):
+        copy_object = super().clone()
+        copy_object.name += '_copy'
+        copy_object.category = self.category
+        copy_object.category.courses.append(copy_object)
+        return copy_object
 
 
 class InteractiveCourse(Course):
@@ -86,6 +109,9 @@ class TrainingSite:
     @staticmethod
     def create_category(name, category=None):
         return Category(name, category)
+
+    def find_parent_categories(self):
+        return [c for c in self.categories if not c.have_parent]
 
     def find_category_by_id(self, id):
         for item in self.categories:

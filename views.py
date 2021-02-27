@@ -44,7 +44,6 @@ def course_copy(request):
     old_course = site.get_course_by_name(name)
     if old_course:
         new_course = old_course.clone()
-        new_course.name = f'{name}_copy'
         site.courses.append(new_course)
     return '200 OK', render('course_list', courses=site.courses)
 
@@ -53,9 +52,10 @@ def course_copy(request):
 @debug
 def category_list(request):
     logger.log('category_list')
-    logger.log(f'categories = {site.categories}')
+    categories = site.find_parent_categories()
+    logger.log(f'categories = {categories}')
     logger.log(f'courses = {site.courses}')
-    return '200 OK', render('category_list', categories=site.categories)
+    return '200 OK', render('category_list', categories=categories)
 
 
 @application.add_route('/category-create/')
@@ -70,9 +70,11 @@ def category_create(request):
             int(category_id)) if category_id else None
         new_category = site.create_category(name, category)
         site.categories.append(new_category)
-        return '302 Moved Temporarily', render('category_list', categories=site.categories)
+        categories = site.find_parent_categories()
+        return '302 Moved Temporarily', render('category_list', categories=categories)
     else:
         logger.log('category_create GET')
+        categories = site.find_parent_categories()
         return '200 OK', render('category_create', categories=site.categories)
 
 
