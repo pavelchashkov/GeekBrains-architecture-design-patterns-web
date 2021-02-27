@@ -1,5 +1,5 @@
 from wsgiref.simple_server import make_server
-from GbFramework import WebApp
+from GbFramework import WebApp, DebugWebApp, FakeWebApp
 from importlib import import_module
 from custom_logging import Logger
 
@@ -15,6 +15,9 @@ front_controllers = [
 ]
 
 application = WebApp('TrainingSite', front_controllers)
+# application = DebugWebApp('TrainingSite', front_controllers)
+# application = FakeWebApp('TrainingSite', front_controllers)
+
 import_module('views')
 
 if __name__ == '__main__':
