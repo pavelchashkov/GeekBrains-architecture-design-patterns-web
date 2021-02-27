@@ -3,8 +3,10 @@ from custom_logging import Logger
 
 logger = Logger('models')
 
+
 class User:
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
 class Student(User):
@@ -22,8 +24,8 @@ class UserFactory:
     }
 
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
 
 
 class Category:
@@ -38,7 +40,7 @@ class Category:
         self.have_parent = False
         Category.auto_id += 1
         if parent_category:
-            self.have_parent = True        
+            self.have_parent = True
             parent_category.children.append(self)
         logger.log(self)
 
@@ -97,14 +99,13 @@ class CourseFactory:
 
 class TrainingSite:
     def __init__(self):
-        self.teachers = []
-        self.students = []
+        self.users = []
         self.courses = []
         self.categories = []
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     @staticmethod
     def create_category(name, category=None):
