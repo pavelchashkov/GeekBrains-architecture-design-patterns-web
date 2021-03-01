@@ -26,7 +26,7 @@ def course_create(request):
         name = data['name']
         category_id = data.get('category_id')
         if category_id:
-            category = site.find_category_by_id(int(category_id))
+            category = site.get_category_by_id(int(category_id))
             course = site.create_course('interactive', name, category)
             site.courses.append(course)
         return '302 Moved Temporarily', render('course_list', courses=site.courses)
@@ -40,7 +40,7 @@ def course_copy(request):
     logger.log('course_copy')
     params = request['params']
     name = params['name']
-    old_course = site.get_course_by_name(name)
+    old_course = site.find_course_by_name(name)
     if old_course:
         new_course = old_course.clone()
         site.courses.append(new_course)
@@ -65,7 +65,7 @@ def category_create(request):
         data = request['data']
         name = data['name']
         category_id = data.get('category_id')
-        category = site.find_category_by_id(
+        category = site.get_category_by_id(
             int(category_id)) if category_id else None
         new_category = site.create_category(name, category)
         site.categories.append(new_category)
@@ -75,10 +75,12 @@ def category_create(request):
         categories = site.find_parent_categories()
         return '200 OK', render('category_create', categories=site.categories)
 
+
 @application.add_route('/user-list/')
 @debug
 def user_list(request):
     return '200 OK', render('user_list', users=site.users)
+
 
 @application.add_route('/user-create/')
 @debug
@@ -92,6 +94,23 @@ def user_create(request):
         return '302 Moved Temporarily', render('user_list', users=site.users)
     else:
         return '200 OK', render('user_create')
+
+
+@application.add_route('/add-user-on-course/')
+@debug
+def add_user_on_course(request):
+    logger.log(f"add-user-on-course {request['method']}")
+    if request['method'] == 'POST':
+        data = request['data']
+        user_id = int(data['user_id'])
+        course_id = int(data['course_id'])
+        user = site.get_user_by_id(user_id)
+        course = site.get_course_by_id(course_id)
+        course.add_user(user)
+        return '302 Moved Temporarily', render('course_list', courses=site.courses)
+    else:
+        return '200 OK', render('add_user_on_course', users=site.users, courses=site.courses)
+
 
 @application.add_route('/contact/')
 @debug

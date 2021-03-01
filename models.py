@@ -5,12 +5,18 @@ logger = Logger('models')
 
 
 class User:
+    auto_id = 0
+
     def __init__(self, name):
+        self.id = User.auto_id
         self.name = name
+        User.auto_id += 1
 
 
 class Student(User):
-    pass
+    def __init__(self, *args, **kwargs):
+        self.courses = []
+        super().__init__(*args, **kwargs)
 
 
 class Teacher(User):
@@ -65,10 +71,15 @@ class Category:
 
 
 class Course(PrototypeMixin):
+    auto_id = 0
+
     def __init__(self, name, category):
+        self.id = Course.auto_id
         self.name = name
         self.category = category
         self.category.courses.append(self)
+        self.users = []
+        Course.auto_id += 1
 
     def clone(self):
         copy_object = super().clone()
@@ -76,6 +87,10 @@ class Course(PrototypeMixin):
         copy_object.category = self.category
         copy_object.category.courses.append(copy_object)
         return copy_object
+
+    def add_user(self, user: User):
+        self.users.append(user)
+        user.courses.append(self)
 
 
 class InteractiveCourse(Course):
@@ -107,6 +122,18 @@ class TrainingSite:
     def create_user(type_, name):
         return UserFactory.create(type_, name)
 
+    def find_user_by_name(self, name) -> User:
+        for item in self.users:
+            if item.name == name:
+                return item
+        return None
+
+    def get_user_by_id(self, id):
+        for item in self.users:
+            if item.id == id:
+                return item
+        raise Exception(f'Нет пользователя с id = {id}')
+
     @staticmethod
     def create_category(name, category=None):
         return Category(name, category)
@@ -114,7 +141,7 @@ class TrainingSite:
     def find_parent_categories(self):
         return [c for c in self.categories if not c.have_parent]
 
-    def find_category_by_id(self, id):
+    def get_category_by_id(self, id):
         for item in self.categories:
             if item.id == id:
                 return item
@@ -124,7 +151,13 @@ class TrainingSite:
     def create_course(type_, name, category) -> None:
         return CourseFactory.create(type_, name, category)
 
-    def get_course_by_name(self, name) -> Course:
+    def get_course_by_id(self, id):
+        for item in self.courses:
+            if item.id == id:
+                return item
+        raise Exception(f'Нет курса с id = {id}')
+
+    def find_course_by_name(self, name) -> Course:
         for item in self.courses:
             if item.name == name:
                 return item
