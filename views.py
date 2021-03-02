@@ -1,5 +1,5 @@
 from GbFramework.templates import render
-from GbFramework.templates.cbv import ListView
+from GbFramework.templates.cbv import ListView, CreateView
 from main import application
 from datetime import datetime
 from models import TrainingSite, SmsNotifier, EmailNotifier
@@ -12,29 +12,21 @@ sms_notifier = SmsNotifier()
 email_notifier = EmailNotifier()
 
 
-@application.add_route('/api/courses/')
-@debug
-def api_courses(request):
-    return '200 OK', BaseSerializer(site.courses).save()
-
-
 class CourseListView(ListView):
     template_name = 'course_list'
     queryset = site.courses
 
 
-@application.add_route('/')
-@debug
-def course_list(request):
-    return CourseListView()(request)
+class CourseCreateView(CreateView):
+    template_name = 'course_create'
 
+    def get_context_data(self):
+        return {'categories': site.categories}
 
-@application.add_route('/course-create/')
-@debug
-def course_create(request):
-    logger.log(f"course_create {request['method']}")
-    if request['method'] == 'POST':
-        data = request['data']
+    def render_post(self, request):
+        return CourseListView()(request)
+
+    def create_obj(self, data):
         name = data['name']
         category_id = data.get('category_id')
         if category_id:
@@ -43,9 +35,54 @@ def course_create(request):
             course.observers.append(sms_notifier)
             course.observers.append(email_notifier)
             site.courses.append(course)
-        return '302 Moved Temporarily', render('course_list', list_objects=site.courses)
-    else:
-        return '200 OK', render('course_create', categories=site.categories)
+
+
+class CategoryListView(ListView):
+    template_name = 'category_list'
+
+    def get_queryset(self):
+        return site.find_parent_categories()
+
+
+class CategoryCreateView(CreateView):
+    template_name = 'category_create'
+
+    def get_context_data(self) -> dict:
+        return {'categories': site.categories}
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        category_id = data.get('category_id')
+        category = site.get_category_by_id(
+            int(category_id)) if category_id else None
+        new_category = site.create_category(name, category)
+        site.categories.append(new_category)
+
+    def render_post(self, request):
+        return CategoryListView()(request)
+
+
+class UserListView(ListView):
+    template_name = 'user_list'
+    queryset = site.users
+
+
+class UserCreateView(CreateView):
+    template_name = 'user_create'
+
+    def render_post(self, request):
+        return UserListView()(request)
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        user = site.create_user('student', name)
+        site.users.append(user)
+
+
+@application.add_route('/course-create/')
+@debug
+def course_create(request):
+    return CourseCreateView()(request)
 
 
 @application.add_route('/course-copy/')
@@ -58,14 +95,7 @@ def course_copy(request):
     if old_course:
         new_course = old_course.clone()
         site.courses.append(new_course)
-    return '200 OK', render('course_list', list_objects=site.courses)
-
-
-class CategoryListView(ListView):
-    template_name = 'category_list'
-
-    def get_queryset(self):
-        return site.find_parent_categories()
+    return CourseListView()(request)
 
 
 @application.add_route('/category-list/')
@@ -77,26 +107,7 @@ def category_list(request):
 @application.add_route('/category-create/')
 @debug
 def category_create(request):
-    logger.log(f"category_create {request['method']}")
-    if request['method'] == 'POST':
-        data = request['data']
-        name = data['name']
-        category_id = data.get('category_id')
-        category = site.get_category_by_id(
-            int(category_id)) if category_id else None
-        new_category = site.create_category(name, category)
-        site.categories.append(new_category)
-        categories = site.find_parent_categories()
-        return '302 Moved Temporarily', render('category_list', list_objects=categories)
-    else:
-        categories = site.find_parent_categories()
-        return '200 OK', render('category_create', categories=site.categories)
-
-
-class UserListView(ListView):
-    template_name = 'user_list'
-    queryset = site.users
-
+    return CategoryCreateView()(request)
 
 
 @application.add_route('/user-list/')
@@ -108,15 +119,19 @@ def user_list(request):
 @application.add_route('/user-create/')
 @debug
 def user_create(request):
-    logger.log(f"user_create {request['method']}")
-    if request['method'] == 'POST':
-        data = request['data']
-        name = data['name']
-        user = site.create_user('student', name)
-        site.users.append(user)
-        return '302 Moved Temporarily', render('user_list', list_objects=site.users)
-    else:
-        return '200 OK', render('user_create')
+    return UserCreateView()(request)
+
+
+@application.add_route('/api/courses/')
+@debug
+def api_courses(request):
+    return '200 OK', BaseSerializer(site.courses).save()
+
+
+@application.add_route('/')
+@debug
+def course_list(request):
+    return CourseListView()(request)
 
 
 @application.add_route('/add-user-on-course/')
@@ -130,7 +145,7 @@ def add_user_on_course(request):
         user = site.get_user_by_id(user_id)
         course = site.get_course_by_id(course_id)
         course.add_user(user)
-        return '302 Moved Temporarily', render('course_list', list_objects=site.courses)
+        return CourseListView()(request)
     else:
         return '200 OK', render('add_user_on_course', users=site.users, courses=site.courses)
 
