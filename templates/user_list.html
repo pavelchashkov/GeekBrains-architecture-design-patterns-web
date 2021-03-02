@@ -8,9 +8,9 @@
 <h3>Список пользователей</h3>
 
 <ul>
-    {% for item in users %}
+    {% for user in list_objects %}
     <li>
-        {{ item.name }}
+        {{ user.name }}
     </li>
     {% endfor %}
 </ul>

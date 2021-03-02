@@ -8,7 +8,7 @@
 <h3>Список категорий</h3>
 
 <ul>
-    {% for item in categories recursive %}
+    {% for item in list_objects recursive %}
     <li>
         {{ item.name }} <span>Количество курсов: {{item.course_count()}}</span>
     </li>

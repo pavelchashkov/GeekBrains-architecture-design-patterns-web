@@ -1,4 +1,5 @@
-from GbFramework import render
+from GbFramework.templates import render
+from GbFramework.templates.cbv import ListView
 from main import application
 from datetime import datetime
 from models import TrainingSite, SmsNotifier, EmailNotifier
@@ -17,13 +18,15 @@ def api_courses(request):
     return '200 OK', BaseSerializer(site.courses).save()
 
 
+class CourseListView(ListView):
+    template_name = 'course_list'
+    queryset = site.courses
+
+
 @application.add_route('/')
 @debug
 def course_list(request):
-    logger.log('course_list')
-    logger.log(f'categories = {site.categories}')
-    logger.log(f'courses = {site.courses}')
-    return '200 OK', render('course_list', courses=site.courses)
+    return CourseListView()(request)
 
 
 @application.add_route('/course-create/')
@@ -40,7 +43,7 @@ def course_create(request):
             course.observers.append(sms_notifier)
             course.observers.append(email_notifier)
             site.courses.append(course)
-        return '302 Moved Temporarily', render('course_list', courses=site.courses)
+        return '302 Moved Temporarily', render('course_list', list_objects=site.courses)
     else:
         return '200 OK', render('course_create', categories=site.categories)
 
@@ -55,17 +58,20 @@ def course_copy(request):
     if old_course:
         new_course = old_course.clone()
         site.courses.append(new_course)
-    return '200 OK', render('course_list', courses=site.courses)
+    return '200 OK', render('course_list', list_objects=site.courses)
+
+
+class CategoryListView(ListView):
+    template_name = 'category_list'
+
+    def get_queryset(self):
+        return site.find_parent_categories()
 
 
 @application.add_route('/category-list/')
 @debug
 def category_list(request):
-    categories = site.find_parent_categories()
-    logger.log('category_list')
-    logger.log(f'courses = {site.courses}')
-    logger.log(f'categories = {categories}')
-    return '200 OK', render('category_list', categories=categories)
+    return CategoryListView()(request)
 
 
 @application.add_route('/category-create/')
@@ -81,16 +87,22 @@ def category_create(request):
         new_category = site.create_category(name, category)
         site.categories.append(new_category)
         categories = site.find_parent_categories()
-        return '302 Moved Temporarily', render('category_list', categories=categories)
+        return '302 Moved Temporarily', render('category_list', list_objects=categories)
     else:
         categories = site.find_parent_categories()
         return '200 OK', render('category_create', categories=site.categories)
 
 
+class UserListView(ListView):
+    template_name = 'user_list'
+    queryset = site.users
+
+
+
 @application.add_route('/user-list/')
 @debug
 def user_list(request):
-    return '200 OK', render('user_list', users=site.users)
+    return UserListView()(request)
 
 
 @application.add_route('/user-create/')
@@ -102,7 +114,7 @@ def user_create(request):
         name = data['name']
         user = site.create_user('student', name)
         site.users.append(user)
-        return '302 Moved Temporarily', render('user_list', users=site.users)
+        return '302 Moved Temporarily', render('user_list', list_objects=site.users)
     else:
         return '200 OK', render('user_create')
 
@@ -118,7 +130,7 @@ def add_user_on_course(request):
         user = site.get_user_by_id(user_id)
         course = site.get_course_by_id(course_id)
         course.add_user(user)
-        return '302 Moved Temporarily', render('course_list', courses=site.courses)
+        return '302 Moved Temporarily', render('course_list', list_objects=site.courses)
     else:
         return '200 OK', render('add_user_on_course', users=site.users, courses=site.courses)
 

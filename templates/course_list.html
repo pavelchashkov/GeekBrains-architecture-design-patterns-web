@@ -8,7 +8,7 @@
 <h3>Список курсов</h3>
 
 <ul>
-  {% for course in courses %}
+  {% for course in list_objects %}
   <li>
       {{course.name}} <span><a href="/course-copy/?name={{course.name}}">Копировать курс</a></span>
       <ul>
