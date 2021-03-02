@@ -3,11 +3,19 @@ from main import application
 from datetime import datetime
 from models import TrainingSite, SmsNotifier, EmailNotifier
 from custom_logging import Logger, debug
+from serializers import BaseSerializer
 
 site = TrainingSite()
 logger = Logger('views')
 sms_notifier = SmsNotifier()
 email_notifier = EmailNotifier()
+
+
+@application.add_route('/api/courses/')
+@debug
+def api_courses(request):
+    return '200 OK', BaseSerializer(site.courses).save()
+
 
 @application.add_route('/')
 @debug
