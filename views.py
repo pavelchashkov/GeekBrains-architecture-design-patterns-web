@@ -2,11 +2,11 @@ from GbFramework import render
 from main import application
 from datetime import datetime
 from models import TrainingSite, SmsNotifier, EmailNotifier
-from custom_logging import Logger, debug
+from custom_logging import Logger, debug, FileWriter
 from serializers import BaseSerializer
 
 site = TrainingSite()
-logger = Logger('views')
+logger = Logger('views', writer=FileWriter('app.log'))
 sms_notifier = SmsNotifier()
 email_notifier = EmailNotifier()
 

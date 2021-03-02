@@ -1,9 +1,10 @@
 from wsgiref.simple_server import make_server
 from GbFramework import WebApp, DebugWebApp, FakeWebApp
 from importlib import import_module
-from custom_logging import Logger
+from custom_logging import Logger, FileWriter
 
-logger = Logger('main')
+logger = Logger('main', writer=FileWriter('app.log'))
+
 
 def fc_add_secret_key(request):
     request['secret_key'] = 'SECRET_KEY'

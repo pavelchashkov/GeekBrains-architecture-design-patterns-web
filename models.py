@@ -1,8 +1,8 @@
 from resource.prototypes import PrototypeMixin
 from resource.observer import Observer, Subject
-from custom_logging import Logger
+from custom_logging import Logger, FileWriter
 
-logger = Logger('models')
+logger = Logger('models', writer=FileWriter('app.log'))
 
 
 class User:
