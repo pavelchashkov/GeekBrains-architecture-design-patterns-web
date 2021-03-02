@@ -1,4 +1,5 @@
 from resource.prototypes import PrototypeMixin
+from resource.observer import Observer, Subject
 from custom_logging import Logger
 
 logger = Logger('models')
@@ -70,7 +71,7 @@ class Category:
         return self.__repr__()
 
 
-class Course(PrototypeMixin):
+class Course(PrototypeMixin, Subject):
     auto_id = 0
 
     def __init__(self, name, category):
@@ -80,6 +81,7 @@ class Course(PrototypeMixin):
         self.category.courses.append(self)
         self.users = []
         Course.auto_id += 1
+        super().__init__()
 
     def clone(self):
         copy_object = super().clone()
@@ -91,6 +93,7 @@ class Course(PrototypeMixin):
     def add_user(self, user: User):
         self.users.append(user)
         user.courses.append(self)
+        self.notify()
 
 
 class InteractiveCourse(Course):
@@ -162,3 +165,11 @@ class TrainingSite:
             if item.name == name:
                 return item
         return None
+
+class SmsNotifier(Observer):
+    def update(self, subject: Course):
+        print(f'SMS: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+
+class EmailNotifier(Observer):
+    def update(self, subject: Course):
+        print(f'Email: на курс {subject.name} добавился пользователь {subject.users[-1].name}')

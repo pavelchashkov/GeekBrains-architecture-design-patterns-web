@@ -5,7 +5,6 @@ from custom_logging import Logger
 
 logger = Logger('main')
 
-
 def fc_add_secret_key(request):
     request['secret_key'] = 'SECRET_KEY'
 

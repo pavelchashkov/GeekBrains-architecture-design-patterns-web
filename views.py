@@ -1,12 +1,13 @@
 from GbFramework import render
 from main import application
 from datetime import datetime
-from models import TrainingSite
+from models import TrainingSite, SmsNotifier, EmailNotifier
 from custom_logging import Logger, debug
 
 site = TrainingSite()
 logger = Logger('views')
-
+sms_notifier = SmsNotifier()
+email_notifier = EmailNotifier()
 
 @application.add_route('/')
 @debug
@@ -28,6 +29,8 @@ def course_create(request):
         if category_id:
             category = site.get_category_by_id(int(category_id))
             course = site.create_course('interactive', name, category)
+            course.observers.append(sms_notifier)
+            course.observers.append(email_notifier)
             site.courses.append(course)
         return '302 Moved Temporarily', render('course_list', courses=site.courses)
     else:
