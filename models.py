@@ -1,14 +1,23 @@
 from resource.prototypes import PrototypeMixin
-from custom_logging import Logger
+from resource.observer import Observer, Subject
+from custom_logging import Logger, FileWriter
 
-logger = Logger('models')
+logger = Logger('models', writer=FileWriter('app.log'))
+
 
 class User:
-    pass
+    auto_id = 0
+
+    def __init__(self, name):
+        self.id = User.auto_id
+        self.name = name
+        User.auto_id += 1
 
 
 class Student(User):
-    pass
+    def __init__(self, *args, **kwargs):
+        self.courses = []
+        super().__init__(*args, **kwargs)
 
 
 class Teacher(User):
@@ -22,8 +31,8 @@ class UserFactory:
     }
 
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
 
 
 class Category:
@@ -38,7 +47,7 @@ class Category:
         self.have_parent = False
         Category.auto_id += 1
         if parent_category:
-            self.have_parent = True        
+            self.have_parent = True
             parent_category.children.append(self)
         logger.log(self)
 
@@ -62,11 +71,17 @@ class Category:
         return self.__repr__()
 
 
-class Course(PrototypeMixin):
+class Course(PrototypeMixin, Subject):
+    auto_id = 0
+
     def __init__(self, name, category):
+        self.id = Course.auto_id
         self.name = name
         self.category = category
         self.category.courses.append(self)
+        self.users = []
+        Course.auto_id += 1
+        super().__init__()
 
     def clone(self):
         copy_object = super().clone()
@@ -74,6 +89,11 @@ class Course(PrototypeMixin):
         copy_object.category = self.category
         copy_object.category.courses.append(copy_object)
         return copy_object
+
+    def add_user(self, user: User):
+        self.users.append(user)
+        user.courses.append(self)
+        self.notify()
 
 
 class InteractiveCourse(Course):
@@ -97,14 +117,25 @@ class CourseFactory:
 
 class TrainingSite:
     def __init__(self):
-        self.teachers = []
-        self.students = []
+        self.users = []
         self.courses = []
         self.categories = []
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
+
+    def find_user_by_name(self, name) -> User:
+        for item in self.users:
+            if item.name == name:
+                return item
+        return None
+
+    def get_user_by_id(self, id):
+        for item in self.users:
+            if item.id == id:
+                return item
+        raise Exception(f'Нет пользователя с id = {id}')
 
     @staticmethod
     def create_category(name, category=None):
@@ -113,7 +144,7 @@ class TrainingSite:
     def find_parent_categories(self):
         return [c for c in self.categories if not c.have_parent]
 
-    def find_category_by_id(self, id):
+    def get_category_by_id(self, id):
         for item in self.categories:
             if item.id == id:
                 return item
@@ -123,8 +154,22 @@ class TrainingSite:
     def create_course(type_, name, category) -> None:
         return CourseFactory.create(type_, name, category)
 
-    def get_course_by_name(self, name) -> Course:
+    def get_course_by_id(self, id):
+        for item in self.courses:
+            if item.id == id:
+                return item
+        raise Exception(f'Нет курса с id = {id}')
+
+    def find_course_by_name(self, name) -> Course:
         for item in self.courses:
             if item.name == name:
                 return item
         return None
+
+class SmsNotifier(Observer):
+    def update(self, subject: Course):
+        print(f'SMS: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+
+class EmailNotifier(Observer):
+    def update(self, subject: Course):
+        print(f'Email: на курс {subject.name} добавился пользователь {subject.users[-1].name}')

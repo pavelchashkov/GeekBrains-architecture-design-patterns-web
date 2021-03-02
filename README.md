@@ -26,6 +26,10 @@ uwsgi --http :8000 --wsgi-file main.py
 - Фабричный метод
 - Декоратор
 - Фасад
+- Посредник
+- Наблюдатель
+- Итератор
+- Стратегия
 
 Доступные URL:
 - http://localhost:8000/
@@ -33,6 +37,9 @@ uwsgi --http :8000 --wsgi-file main.py
 - http://localhost:8000/course-copy/
 - http://localhost:8000/category-list/
 - http://localhost:8000/category-create/
+- http://localhost:8000/user-list/
+- http://localhost:8000/user-create/
+- http://localhost:8000/add-user-on-course/
 - http://localhost:8000/contact/
 
 
@@ -42,5 +49,8 @@ uwsgi --http :8000 --wsgi-file main.py
 - course_create.html
 - category_list.html
 - category_create.html
+- user_list.html
+- user_create.html
+- add_user_on_course.html
 - contact.html
 - inc-table.html (встраиваемый компонент таблицы)

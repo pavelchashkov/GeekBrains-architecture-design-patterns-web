@@ -8,9 +8,16 @@
 <h3>Список курсов</h3>
 
 <ul>
-  {% for item in courses %}
+  {% for course in list_objects %}
   <li>
-      {{item.name}} <span><a href="/course-copy/?name={{item.name}}">Копировать курс</a></span>
+      {{course.name}} <span><a href="/course-copy/?name={{course.name}}">Копировать курс</a></span>
+      <ul>
+        {% for user in course.users %}
+          <li>
+            {{user.name}}       
+          </li>
+        {% endfor %}    
+      </ul>
   </li>
   {% endfor %}
 </ul>
