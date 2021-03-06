@@ -1,15 +1,19 @@
 from GbFramework.templates import render
+from GbFramework.orm import UnitOfWork
 from GbFramework.templates.cbv import ListView, CreateView
 from main import application
 from datetime import datetime
 from models import TrainingSite, SmsNotifier, EmailNotifier
 from custom_logging import Logger, debug, FileWriter
 from serializers import BaseSerializer
+from models_mappers import MapperRegistry
 
 site = TrainingSite()
 logger = Logger('views', writer=FileWriter('app.log'))
 sms_notifier = SmsNotifier()
 email_notifier = EmailNotifier()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 
 class CourseListView(ListView):
@@ -64,8 +68,10 @@ class CategoryCreateView(CreateView):
 
 class UserListView(ListView):
     template_name = 'user_list'
-    queryset = site.users
+    # queryset = site.users
 
+    def get_queryset(self):
+          return MapperRegistry.get_current_mapper('student').all()
 
 class UserCreateView(CreateView):
     template_name = 'user_create'
@@ -77,6 +83,8 @@ class UserCreateView(CreateView):
         name = data['name']
         user = site.create_user('student', name)
         site.users.append(user)
+        user.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @application.add_route('/course-create/')

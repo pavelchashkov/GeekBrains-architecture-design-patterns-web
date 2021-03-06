@@ -1,3 +1,4 @@
+from GbFramework.orm.unit_of_work import DomainObject
 from resource.prototypes import PrototypeMixin
 from resource.observer import Observer, Subject
 from custom_logging import Logger, FileWriter
@@ -5,13 +6,9 @@ from custom_logging import Logger, FileWriter
 logger = Logger('models', writer=FileWriter('app.log'))
 
 
-class User:
-    auto_id = 0
-
+class User(DomainObject):
     def __init__(self, name):
-        self.id = User.auto_id
         self.name = name
-        User.auto_id += 1
 
 
 class Student(User):
@@ -166,10 +163,14 @@ class TrainingSite:
                 return item
         return None
 
+
 class SmsNotifier(Observer):
     def update(self, subject: Course):
-        print(f'SMS: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+        print(
+            f'SMS: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+
 
 class EmailNotifier(Observer):
     def update(self, subject: Course):
-        print(f'Email: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+        print(
+            f'Email: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
