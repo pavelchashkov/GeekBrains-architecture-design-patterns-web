@@ -61,6 +61,8 @@ class CategoryCreateView(CreateView):
             int(category_id)) if category_id else None
         new_category = site.create_category(name, category)
         site.categories.append(new_category)
+        new_category.mark_new()
+        UnitOfWork.get_current().commit()
 
     def render_post(self, request):
         return CategoryListView()(request)
@@ -68,7 +70,6 @@ class CategoryCreateView(CreateView):
 
 class UserListView(ListView):
     template_name = 'user_list'
-    # queryset = site.users
 
     def get_queryset(self):
           return MapperRegistry.get_current_mapper('student').all()

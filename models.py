@@ -32,17 +32,12 @@ class UserFactory:
         return cls.types[type_](name)
 
 
-class Category:
-
-    auto_id = 0
-
+class Category(DomainObject):
     def __init__(self, name, parent_category):
-        self.id = Category.auto_id
         self.name = name
         self.children = []
         self.courses = []
         self.have_parent = False
-        Category.auto_id += 1
         if parent_category:
             self.have_parent = True
             parent_category.children.append(self)
