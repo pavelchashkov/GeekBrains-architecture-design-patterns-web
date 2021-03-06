@@ -63,16 +63,12 @@ class Category(DomainObject):
         return self.__repr__()
 
 
-class Course(PrototypeMixin, Subject):
-    auto_id = 0
-
+class Course(PrototypeMixin, Subject, DomainObject):
     def __init__(self, name, category):
-        self.id = Course.auto_id
         self.name = name
         self.category = category
         self.category.courses.append(self)
         self.users = []
-        Course.auto_id += 1
         super().__init__()
 
     def clone(self):

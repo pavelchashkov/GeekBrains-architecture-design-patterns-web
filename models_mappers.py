@@ -1,5 +1,5 @@
 import sqlite3
-from models import Student, Category
+from models import Student, Category, Course
 
 connection = sqlite3.connect('app.sqlite')
 
@@ -96,11 +96,40 @@ class CategoryMapper(BaseMapper):
             (obj.name, obj.id)
         )
 
+class CourseMapper(BaseMapper):
+    tablename = 'course'
+
+    def all(self):
+        result = []
+        for item in self.select_all_raw_data():
+            id, name = item
+            course = Course(name)
+            course.id = id
+            result.append(course)
+        return result
+
+    def find_by_id(self, id):
+        result = self.select_by_id_raw_data(id)
+        return Course(*result)
+
+    def insert(self, obj):
+        self.sql_commit_raw_data(
+            f"INSERT INTO {self.tablename} (name) VALUES (?)", 
+            (obj.name,)
+        )
+
+    def update(self, obj):
+        self.sql_commit_raw_data(
+            f"UPDATE {self.tablename} SET name=? WHERE id=?",
+            (obj.name, obj.id)
+        )
+
 
 class MapperRegistry:
     mappers = {
         'student': StudentMapper,
-        'category': CategoryMapper
+        'category': CategoryMapper,
+        'course': CourseMapper,
     }
 
     @staticmethod
@@ -109,6 +138,8 @@ class MapperRegistry:
             return StudentMapper(connection)
         if isinstance(obj, Category):
             return CategoryMapper(connection)
+        if isinstance(obj, Course):
+            return CourseMapper(connection)
 
     @staticmethod
     def get_current_mapper(name):

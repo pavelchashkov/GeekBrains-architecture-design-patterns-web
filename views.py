@@ -18,7 +18,9 @@ UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 class CourseListView(ListView):
     template_name = 'course_list'
-    queryset = site.courses
+
+    def get_queryset(self):
+        return MapperRegistry.get_current_mapper('course').all()
 
 
 class CourseCreateView(CreateView):
@@ -39,6 +41,8 @@ class CourseCreateView(CreateView):
             course.observers.append(sms_notifier)
             course.observers.append(email_notifier)
             site.courses.append(course)
+            course.mark_new()
+            UnitOfWork.get_current().commit()
 
 
 class CategoryListView(ListView):
