@@ -1,3 +1,4 @@
+from GbFramework.orm.unit_of_work import DomainObject
 from resource.prototypes import PrototypeMixin
 from resource.observer import Observer, Subject
 from custom_logging import Logger, FileWriter
@@ -5,13 +6,9 @@ from custom_logging import Logger, FileWriter
 logger = Logger('models', writer=FileWriter('app.log'))
 
 
-class User:
-    auto_id = 0
-
+class User(DomainObject):
     def __init__(self, name):
-        self.id = User.auto_id
         self.name = name
-        User.auto_id += 1
 
 
 class Student(User):
@@ -35,17 +32,12 @@ class UserFactory:
         return cls.types[type_](name)
 
 
-class Category:
-
-    auto_id = 0
-
+class Category(DomainObject):
     def __init__(self, name, parent_category):
-        self.id = Category.auto_id
         self.name = name
         self.children = []
         self.courses = []
         self.have_parent = False
-        Category.auto_id += 1
         if parent_category:
             self.have_parent = True
             parent_category.children.append(self)
@@ -71,16 +63,12 @@ class Category:
         return self.__repr__()
 
 
-class Course(PrototypeMixin, Subject):
-    auto_id = 0
-
+class Course(PrototypeMixin, Subject, DomainObject):
     def __init__(self, name, category):
-        self.id = Course.auto_id
         self.name = name
         self.category = category
         self.category.courses.append(self)
         self.users = []
-        Course.auto_id += 1
         super().__init__()
 
     def clone(self):
@@ -166,10 +154,14 @@ class TrainingSite:
                 return item
         return None
 
+
 class SmsNotifier(Observer):
     def update(self, subject: Course):
-        print(f'SMS: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+        print(
+            f'SMS: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+
 
 class EmailNotifier(Observer):
     def update(self, subject: Course):
-        print(f'Email: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
+        print(
+            f'Email: на курс {subject.name} добавился пользователь {subject.users[-1].name}')
